@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ceren & Oğuz — Nişan Daveti</title>
+
+  <style>
+    :root{
+      /* ✅ Şampanya teması */
+      --bg1:#f6efe2;      /* açık şampanya */
+      --bg2:#efe3cf;      /* biraz daha koyu */
+      --paper:#fbf6ee;    /* davetiye kağıdı */
+      --ink:#2c2723;
+      --muted:#6f6760;
+
+      /* Vurgu rengi: altın/şampanya */
+      --accent:#c9aa6a;   /* altın-şampanya */
+      --accent2:#b8944e;
+
+      --seal:#efe3cf;
+      --shadow: 0 18px 50px rgba(0,0,0,.18);
+      --radius: 22px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(1200px 600px at 50% -10%, rgba(255,255,255,.55), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color:var(--ink);
+      overflow-x:hidden;
+    }
+
+    .screen{
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+    .hidden{ display:none !important; }
+
+    /* === Envelope === */
+    .envelope-wrap{
+      width:min(420px, 92vw);
+      aspect-ratio: 4 / 5;
+      position:relative;
+      display:grid;
+      place-items:center;
+    }
+
+    .envelope{
+      width:100%;
+      height:100%;
+      border-radius: var(--radius);
+      background:
+        radial-gradient(900px 520px at 30% 20%, rgba(255,255,255,.55), transparent 58%),
+        linear-gradient(180deg, #efe3cf, #e6d4b6);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+      border: 1px solid rgba(0,0,0,.06);
+    }
+
+    .envelope::before{
+      content:"";
+      position:absolute; inset:-40px;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(0,0,0,.06) 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 25%, rgba(0,0,0,.06) 0 2px, transparent 3px),
+        radial-gradient(circle at 40% 65%, rgba(0,0,0,.04) 0 2px, transparent 3px),
+        repeating-linear-gradient(135deg, rgba(0,0,0,.03) 0 2px, transparent 2px 14px);
+      opacity:.28;
+      pointer-events:none;
+    }
+
+    .flap{
+      position:absolute;
+      left:0; right:0;
+      top:0;
+      height:55%;
+      transform-origin: top center;
+      background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.10));
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transition: transform 900ms cubic-bezier(.2,.9,.2,1);
+    }
+
+    .pocket{
+      position:absolute;
+      left:0; right:0;
+      bottom:0;
+      height:62%;
+      background: linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.14));
+      clip-path: polygon(0 0, 50% 45%, 100% 0, 100% 100%, 0 100%);
+      opacity:.40;
+    }
+
+    .letter{
+      position:absolute;
+      left:7%;
+      width:86%;
+      height:78%;
+      bottom:-35%;
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.92));
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,.16);
+      transition: transform 1000ms cubic-bezier(.2,.9,.2,1), bottom 1000ms cubic-bezier(.2,.9,.2,1), opacity 500ms ease;
+      opacity: .98;
+      display:grid;
+      place-items:center;
+      padding:18px;
+      text-align:center;
+      color:#2c2723;
+      border: 1px solid rgba(0,0,0,.06);
+    }
+
+    .letter h2{
+      margin:0;
+      font-weight:700;
+      letter-spacing:.10em;
+      font-size:16px;
+      text-transform:uppercase;
+      opacity:.85;
+    }
+    .letter p{
+      margin:10px 0 0;
+      font-size:14px;
+      opacity:.75;
+    }
+
+    .seal{
+      position:absolute;
+      width:92px;
+      height:92px;
+      border-radius:999px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,.9), rgba(255,255,255,.20) 40%, transparent 70%),
+        linear-gradient(180deg, #f6e9d2, #e6cf9a);
+      box-shadow: 0 12px 28px rgba(0,0,0,.18);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      transition: transform 220ms ease, filter 220ms ease;
+      left:50%;
+      top:52%;
+      transform: translate(-50%,-50%);
+      border: 1px solid rgba(0,0,0,.10);
+
+      /* iOS için yardımcı */
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .seal:active{ transform: translate(-50%,-50%) scale(.98); }
+    .seal:hover{ filter: brightness(1.03); }
+
+    .seal span{
+      font-family: ui-serif, Georgia, "Times New Roman", serif;
+      font-size:26px;
+      opacity:.70;
+      letter-spacing:.02em;
+      color:#6a5325;
+    }
+
+    .tap-hint{
+      position:absolute;
+      bottom:18px;
+      left:0; right:0;
+      text-align:center;
+      color: rgba(44,39,35,.65);
+      font-size:14px;
+      letter-spacing:.02em;
+      font-weight:600;
+    }
+
+    .opening .flap{ transform: rotateX(175deg); }
+    .opening .letter{
+      bottom:10%;
+      transform: translateY(-8%);
+    }
+    .opening .seal{
+      pointer-events:none;
+      opacity:.0;
+      transform: translate(-50%,-50%) scale(.9);
+      transition: opacity 250ms ease, transform 250ms ease;
+    }
+
+    .fade-out{ animation: fadeOut 520ms ease forwards; }
+    @keyframes fadeOut{ to { opacity:0; transform: translateY(10px); } }
+
+    /* === Invitation === */
+    .page{
+      width:min(780px, 94vw);
+      margin: 22px auto 60px;
+      background: rgba(255,255,255,.35);
+      border: 1px solid rgba(0,0,0,.06);
+      border-radius: 26px;
+      overflow:hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    /* ✅ HERO FOTO: İstanbul + kutlama hissi (değiştirebilirsin) */
+    .hero{
+      position:relative;
+      min-height: 72svh;
+      display:grid;
+      place-items:end center;
+      padding: 28px 20px 38px;
+      color:white;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.70)),
+        url("./istanbul.jpg");
+      background-size:cover;
+      background-position:center;
+    }
+
+    .hero-card{
+      width:min(520px, 92%);
+      text-align:center;
+      padding: 18px 18px 16px;
+      border-radius: 22px;
+      background: rgba(0,0,0,.30);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .kicker{
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-size:12px;
+      opacity:.88;
+    }
+
+    .names{
+      font-family: ui-serif, Georgia, "Times New Roman", serif;
+      font-size: 44px;
+      line-height:1.0;
+      margin: 10px 0 6px;
+      font-weight: 500;
+    }
+    .names small{
+      display:block;
+      font-size: 22px;
+      opacity:.92;
+      margin: 6px 0;
+      font-family: ui-sans-serif, system-ui;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .date{
+      font-size: 14px;
+      letter-spacing:.12em;
+      opacity:.92;
+    }
+
+    .content{
+      background: var(--paper);
+      padding: 26px 18px 34px;
+    }
+
+    .section{
+      margin: 18px auto;
+      width:min(620px, 100%);
+      padding: 18px 16px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.02);
+      border: 1px solid rgba(0,0,0,.06);
+      opacity:0;
+      transform: translateY(18px);
+      transition: opacity 700ms ease, transform 700ms ease;
+    }
+    .section.in{ opacity:1; transform: translateY(0); }
+
+    .section h3{
+      margin:0 0 8px;
+      font-size: 18px;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      color:#1f2a2a;
+    }
+    .section p{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .tile{
+      background:white;
+      border:1px solid rgba(0,0,0,.06);
+      border-radius: 16px;
+      padding: 14px;
+      text-align:center;
+    }
+    .tile b{ display:block; font-size: 30px; letter-spacing:.02em; color:#2c2723; }
+    .tile span{
+      display:block;
+      margin-top: 4px;
+      color:var(--muted);
+      text-transform:uppercase;
+      font-size: 11px;
+      letter-spacing:.18em;
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-top: 12px;
+    }
+    .btn{
+      appearance:none;
+      border:none;
+      padding: 12px 14px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight:700;
+      letter-spacing:.02em;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn.primary{
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+      color:#231f1a;
+    }
+    .btn.ghost{
+      background: transparent;
+      border:1px solid rgba(0,0,0,.14);
+      color:#2c2723;
+    }
+
+    iframe{
+      width:100%;
+      height: 260px;
+      border:0;
+      border-radius: 16px;
+      margin-top: 12px;
+    }
+
+    .footer-note{
+      text-align:center;
+      color: rgba(44,39,35,.65);
+      font-size: 13px;
+      padding: 18px 0 26px;
+      letter-spacing:.02em;
+      font-weight:600;
+    }
+
+    @media (max-width:520px){
+      .names{ font-size: 38px; }
+      .grid{ grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- SCREEN 1 -->
+  <main id="screenEnvelope" class="screen">
+    <div class="envelope-wrap">
+      <div id="envelope" class="envelope" aria-label="Zarf">
+        <div class="flap"></div>
+        <div class="pocket"></div>
+
+        <div class="letter" aria-hidden="true">
+          <div>
+            <h2>NİŞAN DAVETİ</h2>
+            <p>Mührü tıklayın ✨</p>
+          </div>
+        </div>
+
+        <button id="seal" class="seal" aria-label="Mühüre tıkla" type="button">
+          <span>C&O</span>
+        </button>
+
+        <div class="tap-hint">Mühüre dokunarak aç</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- SCREEN 2 -->
+  <main id="screenInvite" class="screen hidden" style="place-items:start center;">
+    <div class="page">
+      <section class="hero">
+        <div class="hero-card">
+          <div class="kicker">NİŞANIMIZA BEKLERİZ</div>
+          <div class="names">Ceren <small>&amp;</small> Oğuz</div>
+          <div class="date">25 NİSAN 2026 · 19:00</div>
+        </div>
+      </section>
+
+      <section class="content">
+        <div class="section reveal">
+          <h3>Geri Sayım</h3>
+          <p>Bu güzel güne kalan süre:</p>
+          <div class="grid" id="countdown">
+            <div class="tile"><b id="d">—</b><span>GÜN</span></div>
+            <div class="tile"><b id="h">—</b><span>SAAT</span></div>
+            <div class="tile"><b id="m">—</b><span>DAKİKA</span></div>
+            <div class="tile"><b id="s">—</b><span>SANİYE</span></div>
+          </div>
+        </div>
+
+        <div class="section reveal">
+          <h3>Detaylar</h3>
+          <p>
+            Etkinliğimiz <b>yemeklidir</b>.<br/>
+            Davetiyemiz <b>iki kişiliktir</b>.<br/>
+            Çocuklara <b>iyi uykular</b> dileriz 🌙
+          </p>
+        </div>
+
+        <div class="section reveal">
+          <h3>Konum</h3>
+          <p>
+            Ferahevler, Cenk Sk. No : 1, 34457 Sarıyer/İstanbul
+          </p>
+
+          <iframe
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=Ferahevler%2C%20Cenk%20Sk.%20No%3A%201%2C%2034457%20Sar%C4%B1yer%2F%C4%B0stanbul&output=embed">
+          </iframe>
+
+          <div class="actions">
+            <a class="btn primary" href="https://share.google/HRZ1akcAMkyzmzKfI" target="_blank" rel="noopener">Haritada Aç</a>
+            <button class="btn ghost" id="copyLoc" type="button">Adresi Kopyala</button>
+          </div>
+        </div>
+
+        <div class="section reveal">
+          <h3>RSVP</h3>
+          <p>
+            Katılımınızı <b>15 Nisan 2026</b> tarihine kadar,
+            aşağıdaki formu doldurarak bildirmenizi rica ederiz 💌
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="https://docs.google.com/forms/d/e/1FAIpQLScURLEJkwySUatHw-zzEhRpncTwcl6A8ZIENue-t2AQRC8aDQ/viewform?usp=dialog" target="_blank" rel="noopener">Google Formu Doldur</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="footer-note">Kaydırmaya devam et — tüm detaylar burada ✨</div>
+  </main>
+
+  <script>
+    // 1) Zarfı aç (iOS uyumlu: touchstart + pointerdown + click)
+    const seal = document.getElementById("seal");
+    const envelope = document.getElementById("envelope");
+    const screenEnvelope = document.getElementById("screenEnvelope");
+    const screenInvite = document.getElementById("screenInvite");
+
+    let opened = false;
+
+    function openEnvelope(e){
+      if (opened) return;
+      opened = true;
+      if (e && e.cancelable) e.preventDefault();
+
+      envelope.classList.add("opening");
+
+      setTimeout(() => {
+        screenEnvelope.classList.add("fade-out");
+      }, 900);
+
+      setTimeout(() => {
+        screenEnvelope.classList.add("hidden");
+        screenInvite.classList.remove("hidden");
+        window.scrollTo(0, 0);
+      }, 1450);
+    }
+
+    ["touchstart","pointerdown","click"].forEach(evt => {
+      seal.addEventListener(evt, openEnvelope, { passive: false });
+    });
+
+    // 2) Scroll ile section reveal
+    const reveals = document.querySelectorAll(".reveal");
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add("in");
+      });
+    }, { threshold: 0.25 });
+    reveals.forEach(el => obs.observe(el));
+
+    // 3) Countdown (25 Nisan 2026 19:00 Türkiye saati)
+    const target = new Date("2026-04-25T19:00:00+03:00").getTime();
+    const pad = (n) => String(n).padStart(2, "0");
+
+    function tick(){
+      const now = Date.now();
+      let diff = Math.max(0, target - now);
+
+      const d = Math.floor(diff / (1000*60*60*24));
+      diff -= d * (1000*60*60*24);
+      const h = Math.floor(diff / (1000*60*60));
+      diff -= h * (1000*60*60);
+      const m = Math.floor(diff / (1000*60));
+      diff -= m * (1000*60);
+      const s = Math.floor(diff / 1000);
+
+      document.getElementById("d").textContent = d;
+      document.getElementById("h").textContent = pad(h);
+      document.getElementById("m").textContent = pad(m);
+      document.getElementById("s").textContent = pad(s);
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // 4) Adresi kopyala
+    document.getElementById("copyLoc").addEventListener("click", async () => {
+      const text = "Ferahevler, Cenk Sk. No : 1, 34457 Sarıyer/İstanbul";
+      try{
+        await navigator.clipboard.writeText(text);
+        alert("Adres kopyalandı!");
+      }catch{
+        prompt("Kopyalamak için uzun basıp kopyalayın:", text);
+      }
+    });
+  </script>
+</body>
+</html>
